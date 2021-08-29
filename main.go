@@ -24,9 +24,12 @@ func GenTimer(userInfos []*UserInfo, timer *time.Timer) *time.Timer {
 	}
 	if timer == nil {
 		timer = time.AfterFunc(countdown, func() {
+			now := time.Now()
 			for _, user := range userInfos {
-				for _, contact := range user.Contacts {
-					contact.Send(user.EmergencyMessage)
+				if user.GetTimeout(now).Microseconds() <= 0 {
+					for _, contact := range user.Contacts {
+						contact.Send(user.EmergencyMessage)
+					}
 				}
 			}
 		})
